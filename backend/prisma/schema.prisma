@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int        @id @default(autoincrement())
+  name              String
+  email             String     @unique
+  password          String
+  parcels           Parcel[]   @relation("UserParcels")
+  reports           Report[]   @relation("UserReports")
+  ratings           Rating[]   @relation("UserRatings")
+  comments          Comment[]  @relation("UserComments")
+  messagesSent      Message[]  @relation("MessagesSent")
+  messagesReceived  Message[]  @relation("MessagesReceived")
+}
+
+model Parcel {
+  id          Int        @id @default(autoincrement())
+  description String
+  weight      Float
+  price       Float
+  origin      String
+  destination String
+  userId      Int
+  user        User       @relation("UserParcels", fields: [userId], references: [id])
+  reports     Report[]   @relation("ParcelReports")
+  comments    Comment[]  @relation("ParcelComments")
+}
+
+model Report {
+  id        Int        @id @default(autoincrement())
+  reason    String
+  userId    Int
+  user      User       @relation("UserReports", fields: [userId], references: [id])
+  parcelId  Int
+  parcel    Parcel     @relation("ParcelReports", fields: [parcelId], references: [id])
+}
+
+model Rating {
+  id        Int        @id @default(autoincrement())
+  score     Int
+  userId    Int
+  user      User       @relation("UserRatings", fields: [userId], references: [id])
+  raterId   Int
+}
+
+model Comment {
+  id        Int        @id @default(autoincrement())
+  content   String
+  userId    Int
+  user      User       @relation("UserComments", fields: [userId], references: [id])
+  parcelId  Int
+  parcel    Parcel     @relation("ParcelComments", fields: [parcelId], references: [id])
+}
+
+model Message {
+  id           Int      @id @default(autoincrement())
+  content      String
+  senderId     Int
+  receiverId   Int
+  sender       User     @relation("MessagesSent", fields: [senderId], references: [id])
+  receiver     User     @relation("MessagesReceived", fields: [receiverId], references: [id])
+}
