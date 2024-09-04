@@ -15,17 +15,17 @@ datasource db {
 
 model User {
   id                Int        @id @default(autoincrement())
-  name              String
+  firstName         String
+  lastName          String
   email             String     @unique
   password          String
+  phone             String     @unique
   parcels           Parcel[]   @relation("UserParcels")
   reports           Report[]   @relation("UserReports")
   ratings           Rating[]   @relation("UserRatings")
-  comments          Comment[]  @relation("UserComments")
   messagesSent      Message[]  @relation("MessagesSent")
   messagesReceived  Message[]  @relation("MessagesReceived")
 }
-
 model Parcel {
   id          Int        @id @default(autoincrement())
   description String
@@ -36,7 +36,6 @@ model Parcel {
   userId      Int
   user        User       @relation("UserParcels", fields: [userId], references: [id])
   reports     Report[]   @relation("ParcelReports")
-  comments    Comment[]  @relation("ParcelComments")
 }
 
 model Report {
@@ -51,18 +50,10 @@ model Report {
 model Rating {
   id        Int        @id @default(autoincrement())
   score     Int
+  comment   String
   userId    Int
   user      User       @relation("UserRatings", fields: [userId], references: [id])
   raterId   Int
-}
-
-model Comment {
-  id        Int        @id @default(autoincrement())
-  content   String
-  userId    Int
-  user      User       @relation("UserComments", fields: [userId], references: [id])
-  parcelId  Int
-  parcel    Parcel     @relation("ParcelComments", fields: [parcelId], references: [id])
 }
 
 model Message {

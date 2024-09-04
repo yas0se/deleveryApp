@@ -16,10 +16,10 @@ const prisma = new PrismaClient();
 // User Register
 const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, email, password } = req.body;
+    const { firstName, lastName, phone, email, password } = req.body;
 
     // Check if all the data are filled
-    if ( !name || !email || !password) {
+    if ( !firstName || !lastName || !phone || !email || !password) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         error: new BadRequestError("Please fill all the data").message,
       });
@@ -43,7 +43,9 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     // Save the user in the database
     const newUser = await prisma.user.create({
       data: {
-        name,
+        firstName,
+        lastName,
+        phone,
         email,
         password: hashedPassword,
       },

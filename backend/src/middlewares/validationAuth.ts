@@ -2,11 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 
 const validateRegister = [
-  body("name")
+  body("firstName")
     .isLength({ min: 3 })
-    .withMessage("name must be at least 3 characters")
+    .withMessage("firstName must be at least 3 characters")
     .isAlpha()
-    .withMessage("name must contain only letters"),
+    .withMessage("firstName must contain only letters"),
+  body("lastName")
+    .isLength({ min: 3 })
+    .withMessage("lastName must be at least 3 characters")
+    .isAlpha()
+    .withMessage("lastName must contain only letters"),
   body("email")
     .isEmail()
     .withMessage("Email must be a valid email address")
