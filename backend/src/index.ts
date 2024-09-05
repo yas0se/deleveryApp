@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import routerAuth from "./routes/AuthRoutes";
 import routerUser from "./routes/UserRoutes";
+import routerParcel from './routes/ParcelRoutes';
 
 
 const app = express();
@@ -13,9 +14,10 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello, TypeScript Express!');
 });
 
-// Register the auth routes
+// Register the routes
 app.use("/", routerAuth);
 app.use("/", routerUser);
+app.use("/", routerParcel);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

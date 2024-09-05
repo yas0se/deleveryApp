@@ -23,6 +23,7 @@ model User {
   parcels           Parcel[]   @relation("UserParcels")
   reports           Report[]   @relation("UserReports")
   ratings           Rating[]   @relation("UserRatings")
+  demandes          Demande[]  @relation("UserDemandes")
   messagesSent      Message[]  @relation("MessagesSent")
   messagesReceived  Message[]  @relation("MessagesReceived")
 }
@@ -36,6 +37,18 @@ model Parcel {
   userId      Int
   user        User       @relation("UserParcels", fields: [userId], references: [id])
   reports     Report[]   @relation("ParcelReports")
+  demandes    Demande[]  @relation("ParcelDemandes")
+}
+
+model Demande {
+  id          Int        @id @default(autoincrement())
+  offer       Float
+  userId      Int
+  user        User       @relation("UserDemandes", fields: [userId], references: [id])
+  parcelId    Int
+  parcel      Parcel     @relation("ParcelDemandes", fields: [parcelId], references: [id])
+  status      String     @default("pending") // "pending", "accepted", "rejected"
+  createdAt   DateTime   @default(now())
 }
 
 model Report {

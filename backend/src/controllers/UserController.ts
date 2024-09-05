@@ -27,7 +27,6 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
         error: new NotFoundError("User not found!").message,
       });
     }
-    console;
     const userUpdated = await prisma.user.update({
       where: {
         email: email,
@@ -40,7 +39,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
 
-    return res.status(StatusCodes.OK).json(userUpdated);
+    return res.status(StatusCodes.OK).json({ data: { ...userUpdated, password: "" } });
   } catch (error: any) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -74,7 +73,7 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
         email: email,
       },
     });
-console.log("userDeleted")
+    console.log("userDeleted")
     return res.status(StatusCodes.NO_CONTENT).json("Delete Done");
   } catch (error: any) {
     return res
@@ -99,7 +98,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    return res.status(StatusCodes.OK).json(user);
+    return res.status(StatusCodes.OK).json({ data: { ...user, password: "" } });
   } catch (error: any) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
