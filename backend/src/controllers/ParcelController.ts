@@ -141,70 +141,58 @@ export const getParcelById = async (req: Request, res: Response, next: NextFunct
 
 export const searchParcels = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { origin, destination, minWeight, maxWeight, minPrice, maxPrice } = req.query;
-
-        // Initialiser l'objet de filtre
-        const whereClause: any = {};
-
-        // Ajouter des filtres pour l'origine et la destination
-        if (origin && typeof origin === 'string') {
-            whereClause.origin = origin;
+        const { origin, destination, minWeight, maxWeight, minPrice, maxPrice } = req.body;
+        if(!origin){
+            throw new BadRequestError("Origin is required");
         }
 
-        if (destination && typeof destination === 'string') {
-            whereClause.destination = destination;
-        }
-
-        // Ajouter des filtres pour le poids
-        if (minWeight || maxWeight) {
-            whereClause.weight = {};
-
-            if (minWeight) {
-                const minWeightValue = parseFloat(minWeight as string);
-                if (!isNaN(minWeightValue)) {
-                    whereClause.weight.gte = minWeightValue;
-                }
-            }
-
-            if (maxWeight) {
-                const maxWeightValue = parseFloat(maxWeight as string);
-                if (!isNaN(maxWeightValue)) {
-                    whereClause.weight.lte = maxWeightValue;
-                }
-            }
-        }
-
-        // Ajouter des filtres pour le prix
-        if (minPrice || maxPrice) {
-            whereClause.price = {};
-
-            if (minPrice) {
-                const minPriceValue = parseFloat(minPrice as string);
-                if (!isNaN(minPriceValue)) {
-                    whereClause.price.gte = minPriceValue;
-                }
-            }
-
-            if (maxPrice) {
-                const maxPriceValue = parseFloat(maxPrice as string);
-                if (!isNaN(maxPriceValue)) {
-                    whereClause.price.lte = maxPriceValue;
-                }
-            }
-        }
-
-        // Debug: Afficher la requête de filtre
-        console.log('Where Clause:', whereClause);
-
-        // Effectuer la recherche dans la base de données
+        // Étape 1 : Trouver tous les colis avec un point de départ spécifique
         const parcels = await prisma.parcel.findMany({
-            where: whereClause,
+            where: { origin: origin as string },
         });
 
-        // Debug: Afficher les résultats obtenus
-        console.log('Parcels Found:', parcels);
+        // Étape 2 : Filtrer les résultats trouvés en fonction des autres critères
+        let filteredParcels = parcels;
 
-        return res.status(StatusCodes.OK).json(parcels);
+        // Filtrer par destination
+        if (destination) {
+            filteredParcels = filteredParcels.filter(parcel => parcel.destination === destination);
+        }
+
+        // Filtrer par poids minimum
+        if (minWeight) {
+            const minWeightValue = parseFloat(minWeight as string);
+            if (!isNaN(minWeightValue)) {
+                filteredParcels = filteredParcels.filter(parcel => parcel.weight >= minWeightValue);
+            }
+        }
+
+        // Filtrer par poids maximum
+        if (maxWeight) {
+            const maxWeightValue = parseFloat(maxWeight as string);
+            if (!isNaN(maxWeightValue)) {
+                filteredParcels = filteredParcels.filter(parcel => parcel.weight <= maxWeightValue);
+            }
+        }
+
+        // Filtrer par prix minimum
+        if (minPrice) {
+            const minPriceValue = parseFloat(minPrice as string);
+            if (!isNaN(minPriceValue)) {
+                filteredParcels = filteredParcels.filter(parcel => parcel.price >= minPriceValue);
+            }
+        }
+
+        // Filtrer par prix maximum
+        if (maxPrice) {
+            const maxPriceValue = parseFloat(maxPrice as string);
+            if (!isNaN(maxPriceValue)) {
+                filteredParcels = filteredParcels.filter(parcel => parcel.price <= maxPriceValue);
+            }
+        }
+
+        // Retourner les résultats filtrés
+        return res.status(StatusCodes.OK).json(filteredParcels);
     } catch (error: any) {
         return res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
