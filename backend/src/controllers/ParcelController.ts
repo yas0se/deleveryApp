@@ -138,7 +138,6 @@ export const getParcelById = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-
 export const searchParcels = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { origin, destination, minWeight, maxWeight, minPrice, maxPrice } = req.body;
