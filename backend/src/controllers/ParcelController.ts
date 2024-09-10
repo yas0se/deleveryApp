@@ -3,15 +3,19 @@ import { PrismaClient } from "@prisma/client";
 import { BadRequestError, NotFoundError } from "../errors/index";
 import { Request, Response, NextFunction } from "express";
 
+interface CustomRequest extends Request {
+    user?: any; // Replace 'any' with a more specific type based on the user structure
+}
 
 const prisma = new PrismaClient();
 
-export const createParcel = async (req: Request, res: Response, next: NextFunction) => {
+export const createParcel = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { description, weight, price, origin, destination, userId } = req.body;
+        const userId = req.user.id;
+        const { description, weight, price, origin, destination, imageUrl } = req.body;
 
         // Check if all the data are filled
-        if (!description || !weight || !price || !origin || !destination || !userId) {
+        if (!description || !weight || !price || !origin || !destination || !userId || !imageUrl) {
             throw new BadRequestError("Please fill all the data");
         }
 
@@ -20,6 +24,7 @@ export const createParcel = async (req: Request, res: Response, next: NextFuncti
             data: {
                 description,
                 weight,
+                imageUrl,
                 price,
                 origin,
                 destination,
@@ -35,12 +40,13 @@ export const createParcel = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const updateParcel = async (req: Request, res: Response, next: NextFunction) => {
+export const updateParcel = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { id, description, weight, price, origin, destination } = req.body;
+        const userId = req.user.id;
+        const { id, description, weight, price, origin, destination, imageUrl } = req.body;
 
         // Check if all the data are filled
-        if (!id || !description || !weight || !price || !origin || !destination ) {
+        if (!id || !description || !weight || !price || !origin || !destination || !imageUrl ) {
             throw new BadRequestError("Please fill all the data");
         }
 
@@ -56,6 +62,10 @@ export const updateParcel = async (req: Request, res: Response, next: NextFuncti
             });
         }
 
+        if (parcel.userId != userId){
+            throw new BadRequestError("You can only update your own parcels");
+        }
+
         // Save the Parcel in the database
         const parcelUpdated = await prisma.parcel.update({
             where: {
@@ -66,7 +76,8 @@ export const updateParcel = async (req: Request, res: Response, next: NextFuncti
                 weight,
                 price,
                 origin,
-                destination
+                destination,
+                imageUrl
             },
         });
 
@@ -78,8 +89,9 @@ export const updateParcel = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const deleteParcel = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteParcel = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
+        const userId = req.user.id;
         const { id } = req.params;
 
         // Vérifiez si l'ID est fourni
@@ -95,6 +107,10 @@ export const deleteParcel = async (req: Request, res: Response, next: NextFuncti
 
         if (!parcel) {
             throw new NotFoundError("Parcel not found");
+        }
+
+        if (parcel.userId != userId && !req.user.isAdmine){
+            throw new BadRequestError("You can only delete your own parcels");
         }
 
         await prisma.parcel.delete({

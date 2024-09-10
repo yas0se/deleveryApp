@@ -5,10 +5,15 @@ import { Request, Response, NextFunction } from "express";
 
 const prisma = new PrismaClient();
 
+interface CustomRequest extends Request {
+    user?: any; // Replace 'any' with a more specific type based on the user structure
+}
+
 // Create a new delivery request (DemandeDeLivraison)
-export const createDemande = async (req: Request, res: Response, next: NextFunction) => {
+export const createDemande = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { offer, userId, parcelId } = req.body;
+        const userId = req.user.id
+        const { offer, parcelId } = req.body;
 
         // Check if all the data are filled
         if (!offer || !userId || !parcelId) {
@@ -57,11 +62,10 @@ export const getDemandesByParcel = async (req: Request, res: Response, next: Nex
     }
 };
 
-
 // Get all demandes by userId
-export const getDemandesByUser = async (req: Request, res: Response, next: NextFunction) => {
+export const getDemandesByUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.user.id;
 
         if (!userId) {
             throw new BadRequestError("User ID is required");
@@ -132,7 +136,6 @@ export const updateDemandeStatus = async (req: Request, res: Response, next: Nex
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
-
 
 // Delete a delivery request (DemandeDeLivraison)
 export const deleteDemande = async (req: Request, res: Response, next: NextFunction) => {

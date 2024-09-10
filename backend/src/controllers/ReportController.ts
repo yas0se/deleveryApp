@@ -3,12 +3,15 @@ import { PrismaClient } from "@prisma/client";
 import { BadRequestError, NotFoundError } from "../errors/index";
 import { Request, Response, NextFunction } from "express";
 
-
+interface CustomRequest extends Request {
+    user?: any; // Replace 'any' with a more specific type based on the user structure
+}
 const prisma = new PrismaClient();
 
-export const createReport = async (req: Request, res: Response, next: NextFunction) => {
+export const createReport = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { userId, parcelId, reason } = req.body;
+        const userId = req.user.id;
+        const { parcelId, reason } = req.body;
 
         // Check if all the data are filled
         if (!userId || !parcelId || !reason ) {
@@ -59,9 +62,9 @@ export const getReportsByParcel = async (req: Request, res: Response, next: Next
     }
 };
 
-export const getReportsByUser = async (req: Request, res: Response, next: NextFunction) => {
+export const getReportsByUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.id;
 
         // Vérifiez si l'ID est fourni
         if (!userId) {

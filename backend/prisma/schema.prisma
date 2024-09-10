@@ -17,6 +17,7 @@ model User {
   id                Int        @id @default(autoincrement())
   firstName         String
   lastName          String
+  isAdmine          Boolean    @default(false)
   email             String     @unique
   password          String
   phone             String     @unique
@@ -30,6 +31,7 @@ model User {
 model Parcel {
   id          Int        @id @default(autoincrement())
   description String
+  imageUrl    String
   weight      Float
   price       Float
   origin      String

@@ -20,6 +20,8 @@ function verifyToken(req: CustomRequest, res: Response, next: NextFunction) {
 
     const payload = jwt.verify(token, "user_key") as { user: any };
     req.user = payload.user;
+    console.log("token userid: ", req.user.id)
+
     next();
   } catch (error: any) {
     console.log(error);

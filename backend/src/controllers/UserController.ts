@@ -3,11 +3,15 @@ import { PrismaClient } from "@prisma/client";
 import { BadRequestError, NotFoundError } from "../errors/index";
 import { Request, Response, NextFunction } from "express";
 
+interface CustomRequest extends Request {
+  user?: any; // Replace 'any' with a more specific type based on the user structure
+}
 
 const prisma = new PrismaClient();
 
-const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+const updateUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
+      const id = req.user.id;
     const { firstName, lastName, phone, email } = req.body;
 
     if (!firstName || !lastName || !phone || !email) {
@@ -18,7 +22,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
     const user = await prisma.user.findUnique({
       where: {
-        email: email,
+        id: id,
       },
     });
 
@@ -29,7 +33,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     }
     const userUpdated = await prisma.user.update({
       where: {
-        email: email,
+        id: id,
       },
       data: {
         firstName,
@@ -47,18 +51,18 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+const deleteUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
-    const { email } = req.body;
+      const userId = req.user.id;
 
-    if (!email) {
+    if (!userId) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         error: new BadRequestError("Please fill all the data !").message,
       });
     }
     const existUser = await prisma.user.findUnique({
       where: {
-        email: email,
+        id: userId,
       },
     });
 
@@ -70,7 +74,7 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 
     let userDeleted = await prisma.user.delete({
       where: {
-        email: email,
+        id: userId,
       },
     });
     console.log("userDeleted")
@@ -82,13 +86,14 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getUser = async (req: Request, res: Response, next: NextFunction) => {
+const getUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
-    const { email } = req.body;
+      const userId = req.user.id;
+      console.log("userid: ", userId)
 
     const user = await prisma.user.findUnique({
       where: {
-        email: email,
+        id: userId,
       },
     });
 
