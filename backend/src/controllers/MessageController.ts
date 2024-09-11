@@ -80,6 +80,16 @@ export const sendMessage = async (req: CustomRequest, res: Response, next: NextF
             },
         });
 
+        // Créer une notification pour le propriétaire du colis
+        await prisma.notification.create({
+            data: {
+                type: 'new_message',
+                content: `You have a new message`,
+                userId: receiverId,
+                read: false,
+            }
+        });
+
         res.json(message);
     } catch (error) {
         res.status(500).json({ error: 'Failed to send message' });

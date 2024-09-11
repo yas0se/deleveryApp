@@ -29,6 +29,26 @@ export const createDemande = async (req: CustomRequest, res: Response, next: Nex
             },
         });
 
+        // Récupérer les informations du propriétaire du colis
+        const parcel = await prisma.parcel.findUnique({
+            where: { id: parcelId },
+            select: { userId: true },  // Récupérer uniquement l'ID du propriétaire
+        });
+
+        if (!parcel) {
+            throw new NotFoundError("Parcel not found");
+        }
+
+        // Créer une notification pour le propriétaire du colis
+        await prisma.notification.create({
+            data: {
+                type: 'new_demande',
+                content: `You have a new delivery request for your parcel with ID: ${parcelId}`,
+                userId: parcel.userId,
+                read: false,
+            }
+        });
+
         return res.status(StatusCodes.OK).json(newDemande);
     } catch (error: any) {
         return res
@@ -129,6 +149,15 @@ export const updateDemandeStatus = async (req: Request, res: Response, next: Nex
             data: {
                 status,
             },
+        });
+
+        await prisma.notification.create({
+            data: {
+                type: 'demande_status_update',
+                content: `Your delivery request for parcel ID: ${demande.parcelId} has been ${status}`,
+                userId: demande.userId,
+                read: false,
+            }
         });
 
         return res.status(StatusCodes.OK).json(updatedDemande);

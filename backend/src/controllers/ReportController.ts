@@ -27,6 +27,27 @@ export const createReport = async (req: CustomRequest, res: Response, next: Next
             },
         });
 
+        // Récupérer tous les utilisateurs administrateurs
+        const admins = await prisma.user.findMany({
+            where: {
+                isAdmine: true, 
+            }
+        });
+
+        // Créer une notification pour chaque administrateur
+        const notifications = admins.map((admin) => ({
+            type: 'new_report',
+            content: `A new report has been submitted for parcel ID: ${parcelId}`,
+            userId: admin.id,
+            read: false,
+        }));
+
+        // Enregistrer toutes les notifications dans la base de données
+        await prisma.notification.createMany({
+            data: notifications,
+        });
+
+
         return res.status(StatusCodes.OK).json(newReport);
     } catch (error: any) {
         return res

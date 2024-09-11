@@ -14,22 +14,24 @@ datasource db {
 }
 
 model User {
-  id                Int        @id @default(autoincrement())
-  firstName         String
-  lastName          String
-  isAdmine          Boolean    @default(false)
-  email             String     @unique
-  password          String
-  phone             String     @unique
-  parcels           Parcel[]   @relation("UserParcels")
-  reports           Report[]   @relation("UserReports")
-  ratings           Rating[]   @relation("UserRatings")
-  demandes          Demande[]  @relation("UserDemandes")
-  messagesSent      Message[]  @relation("MessagesSent")
-  messagesReceived  Message[]  @relation("MessagesReceived")
+  id               Int            @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  isAdmine         Boolean        @default(false)
+  email            String         @unique
+  password         String
+  phone            String         @unique
+  parcels          Parcel[]       @relation("UserParcels")
+  reports          Report[]       @relation("UserReports")
+  ratings          Rating[]       @relation("UserRatings")
+  demandes         Demande[]      @relation("UserDemandes")
+  messagesSent     Message[]      @relation("MessagesSent")
+  messagesReceived Message[]      @relation("MessagesReceived")
+  notifications    Notification[] @relation("UserNotifications")
 }
+
 model Parcel {
-  id          Int        @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   description String
   imageUrl    String
   weight      Float
@@ -37,45 +39,55 @@ model Parcel {
   origin      String
   destination String
   userId      Int
-  user        User       @relation("UserParcels", fields: [userId], references: [id])
-  reports     Report[]   @relation("ParcelReports")
-  demandes    Demande[]  @relation("ParcelDemandes")
+  user        User      @relation("UserParcels", fields: [userId], references: [id])
+  reports     Report[]  @relation("ParcelReports")
+  demandes    Demande[] @relation("ParcelDemandes")
 }
 
 model Demande {
-  id          Int        @id @default(autoincrement())
-  offer       Float
-  userId      Int
-  user        User       @relation("UserDemandes", fields: [userId], references: [id])
-  parcelId    Int
-  parcel      Parcel     @relation("ParcelDemandes", fields: [parcelId], references: [id])
-  status      String     @default("pending") // "pending", "accepted", "rejected"
-  createdAt   DateTime   @default(now())
+  id        Int      @id @default(autoincrement())
+  offer     Float
+  userId    Int
+  user      User     @relation("UserDemandes", fields: [userId], references: [id])
+  parcelId  Int
+  parcel    Parcel   @relation("ParcelDemandes", fields: [parcelId], references: [id])
+  status    String   @default("pending") // "pending", "accepted", "rejected"
+  createdAt DateTime @default(now())
 }
 
 model Report {
-  id        Int        @id @default(autoincrement())
-  reason    String
-  userId    Int
-  user      User       @relation("UserReports", fields: [userId], references: [id])
-  parcelId  Int
-  parcel    Parcel     @relation("ParcelReports", fields: [parcelId], references: [id])
+  id       Int    @id @default(autoincrement())
+  reason   String
+  userId   Int
+  user     User   @relation("UserReports", fields: [userId], references: [id])
+  parcelId Int
+  parcel   Parcel @relation("ParcelReports", fields: [parcelId], references: [id])
 }
 
 model Rating {
-  id        Int        @id @default(autoincrement())
-  score     Int
-  comment   String
-  userId    Int
-  user      User       @relation("UserRatings", fields: [userId], references: [id])
-  raterId   Int
+  id      Int    @id @default(autoincrement())
+  score   Int
+  comment String
+  userId  Int
+  user    User   @relation("UserRatings", fields: [userId], references: [id])
+  raterId Int
 }
 
 model Message {
-  id           Int      @id @default(autoincrement())
-  content      String
-  senderId     Int
-  receiverId   Int
-  sender       User     @relation("MessagesSent", fields: [senderId], references: [id])
-  receiver     User     @relation("MessagesReceived", fields: [receiverId], references: [id])
+  id         Int    @id @default(autoincrement())
+  content    String
+  senderId   Int
+  receiverId Int
+  sender     User   @relation("MessagesSent", fields: [senderId], references: [id])
+  receiver   User   @relation("MessagesReceived", fields: [receiverId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String // Type de notification (ex: "demande_acceptée", "nouveau_message", etc.)
+  content   String // Contenu ou message de la notification
+  read      Boolean  @default(false) // Statut pour savoir si la notification a été lue
+  userId    Int
+  user      User     @relation("UserNotifications", fields: [userId], references: [id])
+  createdAt DateTime @default(now()) // Date de création de la notification
 }
