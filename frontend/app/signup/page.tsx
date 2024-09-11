@@ -1,42 +1,73 @@
-import React from 'react';
-import createUser from './createUser';
-import { FormEvent } from 'react'
+/* eslint-disable @next/next/no-img-element */
+"use client"
+import React, { useState } from 'react';
 import { API_URL } from '../constant/apiUrl';
 
 const SignUpPage = () => {
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const email = formData.get('email')
-    const password = formData.get('password')
-    const firstName = formData.get('firstName')
-    const lastName = formData.get('lastName')
-    const phone = formData.get('phone')
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-    console.log('Form Data:', {
+  const handlefirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstName(e.target.value);
+  };
+  const handlelastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLastName(e.target.value);
+  };
+  const handlephoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value);
+  };
+  const handleemailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+  const handlepasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Empêche la soumission du formulaire par défaut
+ console.log('Form Data:', {
       email,
       password,
       firstName,
       lastName,
       phone,
     });
+    if (!firstName || !lastName || !email || !password || !phone ) {
+      alert('Please enter all data');
+      return;
+    }
 
-    
-    const response = await fetch(`${API_URL}/register`, {
-      method: 'POST',
-      body: formData,
-    })
+    try {
+      const response = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Add this header
+        },
+        body: JSON.stringify({ email: email, password : password, phone: phone, firstName: firstName, lastName: lastName}),
+      });
 
-  }
+      if (response.ok) {
+        alert('User added successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error adding user:', error);
+      alert('Failed to add user. Please try again.');
+    }
+  };
 
   return (
     <div>
       <div className="font-[sans-serif]">
         <div className="min-h-screen flex fle-col items-center justify-center p-6">
           <div className="grid lg:grid-cols-2 items-center gap-6 max-w-7xl max-lg:max-w-xl w-full">
-            <form className="lg:max-w-md w-full" onSubmit={onSubmit}>
-              {/* <form className="lg:max-w-md w-full" action={createUser}> */}
+          <form className="lg:max-w-md w-full" onSubmit={handleSubmit}>
               <h3 className="text-gray-800 text-3xl font-extrabold mb-12">
                 Registration
               </h3>
@@ -47,6 +78,8 @@ const SignUpPage = () => {
                     <input
                       name="firstName"
                       type="text"
+                      value={firstName}
+              onChange={handlefirstNameChange}
                       className="bg-gray-100 w-full text-gray-800 text-sm px-4 py-4 focus:bg-transparent outline-blue-500 transition-all"
                       placeholder="First Name"
                     />
@@ -56,6 +89,8 @@ const SignUpPage = () => {
                     <input
                       name="lastName"
                       type="text"
+                      value={lastName}
+                      onChange={handlelastNameChange}
                       className="bg-gray-100 w-full text-gray-800 text-sm px-4 py-4 focus:bg-transparent outline-blue-500 transition-all"
                       placeholder="Last Name"
                     />
@@ -66,6 +101,8 @@ const SignUpPage = () => {
                   <input
                     name="phone"
                     type="text"
+                    value={phone}
+                    onChange={handlephoneChange}
                     className="bg-gray-100 w-full text-gray-800 text-sm px-4 py-4 focus:bg-transparent outline-blue-500 transition-all"
                     placeholder="Enter phone"
                   />
@@ -75,6 +112,8 @@ const SignUpPage = () => {
                   <input
                     name="email"
                     type="text"
+                    value={email}
+                    onChange={handleemailChange}
                     className="bg-gray-100 w-full text-gray-800 text-sm px-4 py-4 focus:bg-transparent outline-blue-500 transition-all"
                     placeholder="Enter email"
                   />
@@ -84,6 +123,8 @@ const SignUpPage = () => {
                   <input
                     name="password"
                     type="password"
+                    value={password}
+                    onChange={handlepasswordChange}
                     className="bg-gray-100 w-full text-gray-800 text-sm px-4 py-4 focus:bg-transparent outline-blue-500 transition-all"
                     placeholder="Enter password"
                   />
