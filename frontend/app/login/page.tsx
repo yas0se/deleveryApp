@@ -3,13 +3,14 @@
 "use client"
 import React, { useState } from 'react';
 import { API_URL } from '../constant/apiUrl';
+import LogoutHeader from '../components/logoutHeader';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,8 +19,8 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password) {
-      alert('Please enter both username and password');
+    if (!email || !password) {
+      alert('Please enter both email and password');
       return;
     }
 
@@ -29,7 +30,7 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
@@ -38,14 +39,19 @@ const LoginPage = () => {
         const errorData = await response.json();
         alert(`Error: ${errorData.message}`);
       }
+      const data= await response.json()
+      console.log('response: ', data)
+      localStorage.setItem('token', data.token);
     } catch (error) {
       console.error('Error logging in:', error);
       alert('Failed to login. Please try again.');
     }
   };
+  
 
   return (
     <div>
+      <LogoutHeader />
       <div className="font-[sans-serif]">
         <div className="min-h-screen flex items-center justify-center p-6">
           <div className="grid lg:grid-cols-2 items-center gap-6 max-w-7xl max-lg:max-w-xl w-full">
@@ -55,14 +61,14 @@ const LoginPage = () => {
               </h3>
               <div className="space-y-6">
                 <div>
-                  <label className="text-gray-800 text-sm mb-2 block">User name</label>
+                  <label className="text-gray-800 text-sm mb-2 block">Email</label>
                   <input
-                    name="username"
+                    name="email"
                     type="text"
-                    value={username}
-                    onChange={handleUsernameChange}
+                    value={email}
+                    onChange={handleEmailChange}
                     className="bg-gray-100 w-full text-gray-800 text-sm px-4 py-4 focus:bg-transparent outline-blue-500 transition-all"
-                    placeholder="Enter user name"
+                    placeholder="Enter email"
                   />
                 </div>
                 <div>
