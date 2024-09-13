@@ -5,9 +5,7 @@ export default function Header() {
     const [userOpen, setUserOpen] = useState(false);
 
     const handleClick = () => {
-        console.log("Menu open state before:", menuOpen);
         setMenuOpen(!menuOpen);  // Toggle menu state
-        console.log("Menu open state after:", !menuOpen);
     };
     const handleUserClick = () => {
         setUserOpen(!userOpen);  // Toggle user dropdown state
@@ -51,7 +49,7 @@ export default function Header() {
                     <ul className='lg:flex lg:gap-x-10 max-lg:space-y-3 max-lg:fixed max-lg:bg-white max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-4 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50'>
                         <li className='mb-6 hidden max-lg:block'>
                             <a href="">
-                                <img src="https://readymadeui.com/readymadeui.svg" alt="logo" className='w-36' />
+                                <img src="https://colisprive.fr/wp-content/uploads/2024/03/picto-CP-2024_traking-colis-copie-2.png" alt="logo" className='w-36' />
                             </a>
                         </li>
                         {['Colis', 'AjouterColis', 'AboutUS', 'Support', 'Messages'].map((item) => (

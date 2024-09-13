@@ -216,3 +216,20 @@ export const searchParcels = async (req: Request, res: Response, next: NextFunct
             .json({ error: error.message });
     }
 };
+
+export const getAllParcel = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const parcels = await prisma.parcel.findMany();
+
+        if (!parcels.length) { // Check for an empty array
+            throw new NotFoundError("Parcels not found");
+        }
+
+        // Wrap the parcels array in an object
+        return res.status(StatusCodes.OK).json({ parcels });
+    } catch (error: any) {
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: error.message });
+    }
+};
