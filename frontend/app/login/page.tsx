@@ -3,11 +3,12 @@
 "use client"
 import React, { useState } from 'react';
 import { API_URL } from '../constant/apiUrl';
-import LogoutHeader from '../components/logoutHeader';
+import { useRouter } from 'next/navigation'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter()
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -42,6 +43,7 @@ const LoginPage = () => {
       const data= await response.json()
       console.log('response: ', data)
       localStorage.setItem('token', data.token);
+      router.push('/colis')
     } catch (error) {
       console.error('Error logging in:', error);
       alert('Failed to login. Please try again.');
@@ -51,7 +53,6 @@ const LoginPage = () => {
 
   return (
     <div>
-      <LogoutHeader />
       <div className="font-[sans-serif]">
         <div className="min-h-screen flex items-center justify-center p-6">
           <div className="grid lg:grid-cols-2 items-center gap-6 max-w-7xl max-lg:max-w-xl w-full">

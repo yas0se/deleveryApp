@@ -16,7 +16,7 @@ export default function Header() {
     return (
         <header className='flex shadow-sm py-3 px-4 sm:px-10 bg-white font-[sans-serif] min-h-[70px] tracking-wide relative z-50'>
             <div className='flex flex-wrap items-center justify-between lg:gap-y-4 gap-y-6 gap-x-4 w-full'>
-                <a href="javascript:void(0)">
+                <a href="">
                     <img
                         src="https://colisprive.fr/wp-content/uploads/2024/03/picto-CP-2024_traking-colis-copie-2.png"
                         alt="logo"
@@ -50,11 +50,11 @@ export default function Header() {
 
                     <ul className='lg:flex lg:gap-x-10 max-lg:space-y-3 max-lg:fixed max-lg:bg-white max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-4 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50'>
                         <li className='mb-6 hidden max-lg:block'>
-                            <a href="javascript:void(0)">
+                            <a href="">
                                 <img src="https://readymadeui.com/readymadeui.svg" alt="logo" className='w-36' />
                             </a>
                         </li>
-                        {['Colis', 'AboutUS', 'Support', 'Messages'].map((item) => (
+                        {['Colis', 'AjouterColis', 'AboutUS', 'Support', 'Messages'].map((item) => (
                             <li
                                 key={item}
                                 className='max-lg:border-b max-lg:py-3 max-lg:px-3 relative lg:hover:after:absolute lg:after:bg-black lg:after:w-0 lg:hover:after:w-full lg:hover:after:h-[2px] lg:after:block lg:after:top-6 lg:after:transition-all lg:after:duration-300'
@@ -98,6 +98,7 @@ export default function Header() {
                                 </ul>
                                 <button
                                     type='button'
+                                    onClick={() => localStorage.removeItem("token")}
                                     className="bg-transparent border-2 border-gray-300 hover:border-black rounded px-4 py-2.5 mt-4 text-sm text-black font-semibold"
                                 >
                                     LOGOUT

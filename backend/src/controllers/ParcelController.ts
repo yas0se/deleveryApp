@@ -13,6 +13,8 @@ export const createParcel = async (req: CustomRequest, res: Response, next: Next
     try {
         const userId = req.user.id;
         const { description, weight, price, origin, destination, imageUrl } = req.body;
+        console.log("Parcel data:", { description, weight, price, origin, destination, imageUrl, userId });
+
 
         // Check if all the data are filled
         if (!description || !weight || !price || !origin || !destination || !userId || !imageUrl) {
@@ -23,9 +25,9 @@ export const createParcel = async (req: CustomRequest, res: Response, next: Next
         const newParcel = await prisma.parcel.create({
             data: {
                 description,
-                weight,
+                weight: parseFloat(weight),
                 imageUrl,
-                price,
+                price: parseFloat(price),
                 origin,
                 destination,
                 userId
