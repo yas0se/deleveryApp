@@ -2,8 +2,12 @@ import React from 'react'
 
 function Footer() {
   return (
-    <div>
-        <footer className="bg-gray-900 text-gray-300 py-6 px-16 font-sans tracking-wide">
+<div className="min-h-screen flex flex-col">
+  {/* Main content area */}
+  <div className="flex-grow">
+    {/* Your main content goes here */}
+  </div>
+          <footer className="bg-gray-900 text-gray-300 py-6 px-16 font-sans tracking-wide">
   <div className="flex justify-between items-center max-lg:flex-col text-center flex-wrap gap-4">
     <p className="text-[15px] leading-loose">
       © Delevery. All rights reserved.

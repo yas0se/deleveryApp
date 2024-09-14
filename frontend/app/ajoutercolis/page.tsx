@@ -1,13 +1,13 @@
-"use client";
-import React, { useState } from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { API_URL } from "../constant/apiUrl";
 
 // Zod validation schema
 const ColisSchema = z.object({
   description: z.string().min(1, "Description is required"),
-  weight: z.number().positive("Weight must be a positive number"),
-  price: z.number().positive("Price must be a positive number"),
+  weight: z.number().positive("Weight must be a positive number").or(z.string()),
+  price: z.number().positive("Price must be a positive number").or(z.string()),
   origin: z.string().min(1, "Origin is required"),
   destination: z.string().min(1, "Destination is required"),
   image: z.instanceof(File).optional(),
@@ -21,10 +21,16 @@ const AjouterColis = () => {
   const [destination, setDestination] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [errors, setErrors] = useState<any>({});
+  const [token, setToken] = useState<string | null>(null);
 
   const cloud_name = "du1w6cmsb";
   const preset_key = "aauez9ty";
-  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("token: ", token)
+    setToken(token);
+  }, []);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -40,21 +46,21 @@ const AjouterColis = () => {
         const formData = new FormData();
         formData.append("file", image);
         formData.append("upload_preset", preset_key);
-  
+
         const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`, {
           method: 'POST',
           body: formData,
         });
-  
+
         if (!res.ok) {
           const errorData = await res.json(); // Read the error response once
           alert(`Error: ${errorData.message}`);
           return;
         }
-  
+
         const imageData = await res.json(); // Read the response body once
         const imageUrl = imageData.secure_url; // Extract the URL
-  
+
         const colis = {
           description,
           weight,
@@ -63,7 +69,7 @@ const AjouterColis = () => {
           destination,
           imageUrl, // Assign the Cloudinary image URL here
         };
-  
+
         // Post the colis data to your API
         const response = await fetch(`${API_URL}/parcel/create`, {
           method: 'POST',
@@ -73,7 +79,7 @@ const AjouterColis = () => {
           },
           body: JSON.stringify(colis),
         });
-  
+
         if (response.ok) {
           const responseData = await response.json();
           alert('Colis created successfully!');
@@ -89,7 +95,7 @@ const AjouterColis = () => {
       alert("An error occurred while saving the colis.");
     }
   };
-  
+
 
   return (
     <div className="p-3">
@@ -117,7 +123,7 @@ const AjouterColis = () => {
               </label>
               <input
                 id="weight"
-                type="text"
+                type="number"
                 className="form-control"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
@@ -132,7 +138,7 @@ const AjouterColis = () => {
               </label>
               <input
                 id="price"
-                type="text"
+                type="number"
                 className="form-control"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
