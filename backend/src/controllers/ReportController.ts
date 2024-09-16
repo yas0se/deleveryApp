@@ -12,6 +12,7 @@ export const createReport = async (req: CustomRequest, res: Response, next: Next
     try {
         const userId = req.user.id;
         const { parcelId, reason } = req.body;
+        console.log("userId, parcelId, reason: ", userId, parcelId, reason )
 
         // Check if all the data are filled
         if (!userId || !parcelId || !reason ) {
