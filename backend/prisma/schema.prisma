@@ -39,6 +39,7 @@ model Parcel {
   origin      String
   destination String
   userId      Int
+  demanded    Boolean   @default(false)
   user        User      @relation("UserParcels", fields: [userId], references: [id])
   reports     Report[]  @relation("ParcelReports")
   demandes    Demande[] @relation("ParcelDemandes")

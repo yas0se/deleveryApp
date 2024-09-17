@@ -2,6 +2,7 @@
 import { API_URL } from "@/app/constant/apiUrl";
 import { useEffect, useState } from "react";
 import {ReportModal} from "./reportModal"
+import Demandes from "@/app/components/demandes";
 
 interface Colis {
   id: number;
@@ -12,6 +13,7 @@ interface Colis {
   origin: string;
   destination: string;
   userId: number;
+  demanded: boolean;
 }
 
 export default function Page({ params }: { params: { slug: string } }) {
@@ -125,7 +127,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
               {activeTab === "demande" && (
                 <div id="demande">
-                  <Demandes />
+                  <Demandes colisId={colis.id} demanded={colis.demanded}/>
                 </div>
               )}
             </div>

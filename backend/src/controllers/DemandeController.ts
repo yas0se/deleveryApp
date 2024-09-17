@@ -60,7 +60,7 @@ export const createDemande = async (req: CustomRequest, res: Response, next: Nex
 // Get all demandes by parcelId
 export const getDemandesByParcel = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { parcelId } = req.body;
+        const { parcelId } = req.params;
 
         if (!parcelId) {
             throw new BadRequestError("Parcel ID is required");
@@ -139,8 +139,12 @@ export const updateDemandeStatus = async (req: Request, res: Response, next: Nex
                     status: "rejected",
                 },
             });
+            // Set the "demanded" field to true for the Parcel
+            await prisma.parcel.update({
+                where: { id: demande.parcelId },
+                data: { demanded: true },
+            });
         }
-
         // Update the current demande status
         const updatedDemande = await prisma.demande.update({
             where: {
