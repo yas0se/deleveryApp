@@ -17,18 +17,17 @@ export const createDemande = async (req: CustomRequest, res: Response, next: Nex
 
         // Check if all the data are filled
         if (!offer || !userId || !parcelId) {
+            console.error("Missing data: ", { offer, userId, parcelId });
             throw new BadRequestError("Please fill all the data");
         }
-
         // Save the DemandeDeLivraison in the database
         const newDemande = await prisma.demande.create({
             data: {
-                offer,
+                offer: parseInt(offer),
                 userId,
                 parcelId
             },
         });
-
         // Récupérer les informations du propriétaire du colis
         const parcel = await prisma.parcel.findUnique({
             where: { id: parcelId },

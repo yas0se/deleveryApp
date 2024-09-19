@@ -3,6 +3,7 @@ import { API_URL } from "@/app/constant/apiUrl";
 import { useEffect, useState } from "react";
 import {ReportModal} from "./reportModal"
 import Demandes from "@/app/components/demandes";
+import { DemandModal } from "./demandModal";
 
 interface Colis {
   id: number;
@@ -22,6 +23,8 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [error, setError] = useState<string | null>(null); // Error handling
   const [activeTab, setActiveTab] = useState<"description" | "demande">("description");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalDemandOpen, setIsModalDemandOpen] = useState(false);
+
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -29,6 +32,14 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+  
+  const handleOpenModalDemand = () => {
+    setIsModalDemandOpen(true);
+  };
+
+  const handleCloseDemandeModal = () => {
+    setIsModalDemandOpen(false);
   };
 
   const handleTabClick = (tab: "description" | "demande") => {
@@ -146,9 +157,11 @@ export default function Page({ params }: { params: { slug: string } }) {
             <button
               type="button"
               className="min-w-[200px] px-4 py-3 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded"
+            onClick={handleOpenModalDemand}
             >
               Demande Livraison Now
             </button>
+            <DemandModal isOpen={isModalDemandOpen} onClose={handleCloseDemandeModal} colisId={colis.id} userId={colis.userId}/>
             <button
               type="button"
               className="min-w-[200px] px-4 py-2.5 border border-gray-800 bg-transparent hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded"
