@@ -74,7 +74,7 @@ const AllColis = () => {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-sm:gap-8">
                         {colis.map(colis => (
-                            <div key={colis.id} className="bg-white rounded overflow-hidden">
+                            <div key={colis.id} className="bg-white rounded overflow-hidden border border-gray-200 drop-shadow-md ">
                                 <img
                                     src={colis.imageUrl}
                                     className="w-full h-52 object-cover"
@@ -91,7 +91,7 @@ const AllColis = () => {
                                     </p>
                                     <a
                                         href={`/colis/${colis.id}`}
-                                        className="mt-4 inline-block px-4 py-2 rounded tracking-wider bg-purple-600 hover:bg-purple-700 text-white text-[13px]"
+                                        className="mt-4 inline-block px-4 py-2 rounded tracking-wider bg-purple-600 hover:bg-purple-700 text-white text-[13px] drop-shadow-md"
                                     >
                                         Read More
                                     </a>

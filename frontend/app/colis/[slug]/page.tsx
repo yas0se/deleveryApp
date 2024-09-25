@@ -1,9 +1,10 @@
 "use client";
 import { API_URL } from "@/app/constant/apiUrl";
 import { useEffect, useState } from "react";
-import {ReportModal} from "./reportModal"
+import { ReportModal } from "./reportModal"
 import Demandes from "@/app/components/demandes";
 import { DemandModal } from "./demandModal";
+import User from "@/app/constant/userId"
 
 interface Colis {
   id: number;
@@ -24,8 +25,14 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [activeTab, setActiveTab] = useState<"description" | "demande">("description");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalDemandOpen, setIsModalDemandOpen] = useState(false);
+  const [user, setUser] = useState();
+  const [isColisOner, setIsColisOner] = useState(false);
 
-
+  if (colis) {
+    if (User.id == colis.userId) {
+      setIsColisOner(true)
+    }
+  }
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -33,7 +40,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  
+
   const handleOpenModalDemand = () => {
     setIsModalDemandOpen(true);
   };
@@ -75,6 +82,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     getData();
+    setUser(User)
   }, [params.slug]);
 
   if (loading) {
@@ -106,43 +114,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             />
           </div>
 
-          <div className="mt-8">
-            <ul className="flex border-b">
-              <li
-                className={`text-sm font-bold py-3 px-8 cursor-pointer transition-all ${activeTab === "description"
-                    ? "text-gray-800 bg-gray-100 border-b-2 border-gray-800"
-                    : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                onClick={() => handleTabClick("description")}
-              >
-                Description
-              </li>
-              <li
-                className={`text-sm font-bold py-3 px-8 cursor-pointer transition-all ${activeTab === "demande"
-                    ? "text-gray-800 bg-gray-100 border-b-2 border-gray-800"
-                    : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                onClick={() => handleTabClick("demande")}
-              >
-                Demandes
-              </li>
-            </ul>
 
-            <div className="mt-8">
-              {activeTab === "description" && (
-                <div id="description">
-                  <h3 className="text-lg font-bold text-gray-800">Colis Description</h3>
-                  <p className="text-sm text-gray-600 mt-4">{colis.description}</p>
-                </div>
-              )}
-
-              {activeTab === "demande" && (
-                <div id="demande">
-                  <Demandes colisId={colis.id} demanded={colis.demanded}/>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
         <div className="max-w-xl">
           <p className="text-gray-800 text-3xl font-bold">{colis.price} DH</p>
@@ -157,27 +129,69 @@ export default function Page({ params }: { params: { slug: string } }) {
             <button
               type="button"
               className="min-w-[200px] px-4 py-3 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded"
-            onClick={handleOpenModalDemand}
+              onClick={handleOpenModalDemand}
             >
               Demande Livraison Now
             </button>
-            <DemandModal isOpen={isModalDemandOpen} onClose={handleCloseDemandeModal} colisId={colis.id} userId={colis.userId}/>
+            <DemandModal isOpen={isModalDemandOpen} onClose={handleCloseDemandeModal} colisId={colis.id} userId={colis.userId} />
             <button
               type="button"
               className="min-w-[200px] px-4 py-2.5 border border-gray-800 bg-transparent hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded"
             >
               Send Message
             </button>
-            <button
-              type="button"
-              className="min-w-[200px] px-4 py-2.5 border border-red-600 bg-transparent hover:bg-red-50 text-red-600 text-sm font-semibold rounded"
-              onClick={handleOpenModal}
-            >
-              Report Colis
-            </button>
-            <ReportModal isOpen={isModalOpen} onClose={handleCloseModal} colisId={colis.id}/>
+            {if(!isColisOner){
+              (
+                <div>
+                  <button
+                    type="button"
+                    className="min-w-[200px] px-4 py-2.5 border border-red-600 bg-transparent hover:bg-red-50 text-red-600 text-sm font-semibold rounded"
+                    onClick={handleOpenModal}
+                  >
+                    Report Colis
+                  </button>
+                  <ReportModal isOpen={isModalOpen} onClose={handleCloseModal} colisId={colis.id} />
+                </div>
+                )}}
 
           </div>
+        </div>
+      </div>
+      <div className="mt-32">
+        <ul className="flex border-b">
+          <li
+            className={`text-sm font-bold py-3 px-8 cursor-pointer transition-all ${activeTab === "description"
+              ? "text-gray-800 bg-gray-100 border-b-2 border-gray-800"
+              : "text-gray-600 hover:bg-gray-100"
+              }`}
+            onClick={() => handleTabClick("description")}
+          >
+            Description
+          </li>
+          <li
+            className={`text-sm font-bold py-3 px-8 cursor-pointer transition-all ${activeTab === "demande"
+              ? "text-gray-800 bg-gray-100 border-b-2 border-gray-800"
+              : "text-gray-600 hover:bg-gray-100"
+              }`}
+            onClick={() => handleTabClick("demande")}
+          >
+            Demandes
+          </li>
+        </ul>
+
+        <div className="mt-8">
+          {activeTab === "description" && (
+            <div id="description">
+              <h3 className="text-lg font-bold text-gray-800">Colis Description</h3>
+              <p className="text-sm text-gray-600 mt-4">{colis.description}</p>
+            </div>
+          )}
+
+          {activeTab === "demande" && (
+            <div id="demande">
+              <Demandes colisId={colis.id} demanded={colis.demanded} isColisOner={isColisOner}/>
+            </div>
+          )}
         </div>
       </div>
     </div>

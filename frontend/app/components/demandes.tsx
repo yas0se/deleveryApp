@@ -13,10 +13,12 @@ interface Demandes {
 
 const Demandes = ({
   colisId,
-  demanded
+  demanded,
+  isColisOner
 }: {
   colisId: number; // Now expecting colis ID as prop
   demanded: boolean;
+  isColisOner: boolean;
 }) => {
   const [demandes, setDemandes] = useState<Demandes[]>([]); // Specify Demandes array type
   const [loading, setLoading] = useState<boolean>(true); // To handle loading state
@@ -118,13 +120,12 @@ const Demandes = ({
           <div className="space-y-6">
             {demandes.map((demande) => (
               <div key={demande.id} className="p-6 bg-gray-100 rounded-md shadow-md">
-                <div className="grid grid-cols-3 items-start gap-4">
+                <div className="grid sm:grid-cols-3 items-start md:gap-4">
                   <div className="col-span-2 flex items-start gap-4">
                     <div className="flex flex-col">
-                      <h3 className="text-sm font-semibold text-gray-700">
+                      <h3 className="text-sm text-center font-semibold text-gray-700">
                         Date: {new Date(demande.createdAt).toLocaleDateString()}
                       </h3>
-                      <p className="text-gray-500 text-sm">Offer by User ID: {demande.userId}</p>
                     </div>
                   </div>
                   <div className="ml-auto flex flex-col items-end">
@@ -197,12 +198,13 @@ const Demandes = ({
                       <h4 className="text-2xl font-bold text-gray-700">
                         {demande.offer} DH
                       </h4>
+                      
                       <button
                         type="button"
                         onClick={() => handleAcceptDemande(demande.id)}
                         className="mt-4 inline-block px-4 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
                       >
-                        Accept
+                        { if(isColisOner) ?: "Accept" , "pending"}
                       </button>
                     </div>
                   </div>
