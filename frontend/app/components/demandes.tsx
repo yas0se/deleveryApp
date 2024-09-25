@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useState } from "react";
 import { API_URL } from "../constant/apiUrl";
@@ -203,8 +204,9 @@ const Demandes = ({
                         type="button"
                         onClick={() => handleAcceptDemande(demande.id)}
                         className="mt-4 inline-block px-4 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
+                        disabled={demande.status === "pending"}
                       >
-                        { if(isColisOner) ?: "Accept" , "pending"}
+                        {isColisOner ? "Pending" : "Accept"}
                       </button>
                     </div>
                   </div>

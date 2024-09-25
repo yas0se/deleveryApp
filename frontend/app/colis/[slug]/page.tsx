@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { API_URL } from "@/app/constant/apiUrl";
 import { useEffect, useState } from "react";
 import { ReportModal } from "./reportModal"
 import Demandes from "@/app/components/demandes";
 import { DemandModal } from "./demandModal";
-import User from "@/app/constant/userId"
+import verifyToken from "@/app/constant/userId"
 
 interface Colis {
   id: number;
@@ -17,7 +22,15 @@ interface Colis {
   userId: number;
   demanded: boolean;
 }
-
+interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  isAdmine: boolean;
+  email: string;
+  password: string;
+  phone: string;
+}
 export default function Page({ params }: { params: { slug: string } }) {
   const [colis, setColis] = useState<Colis | null>(null); // Colis object or null
   const [loading, setLoading] = useState<boolean>(true); // Loading state
@@ -25,14 +38,33 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [activeTab, setActiveTab] = useState<"description" | "demande">("description");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalDemandOpen, setIsModalDemandOpen] = useState(false);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<User | null>(null);
   const [isColisOner, setIsColisOner] = useState(false);
 
-  if (colis) {
-    if (User.id == colis.userId) {
-      setIsColisOner(true)
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // Get the token from localStorage
+    console.log("token: ", token)
+    if (token) {
+      const verifiedUser: any = verifyToken(token); // Call the verifyToken function
+      setUser(verifiedUser);
+      console.log("verifiedUser: ", verifiedUser.id)
+      if (colis) { // Check if colis is not null
+        setIsColisOner(verifiedUser.id === colis.userId);
+      }
+    } else {
+      console.error("No token found");
     }
-  }
+  }, [colis]);
+
+  useEffect(() => {
+    if (colis && user) {
+      setIsColisOner(user.id === colis.userId);
+      console.log("isColisOner: ", isColisOner);
+    }
+  }, [colis, user]);
+  useEffect(() => {
+    console.log("Updated user: ", user);
+  }, [user]);
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -80,9 +112,10 @@ export default function Page({ params }: { params: { slug: string } }) {
     }
   };
 
+
   useEffect(() => {
     getData();
-    setUser(User)
+    setUser(user)
   }, [params.slug]);
 
   if (loading) {
@@ -125,36 +158,33 @@ export default function Page({ params }: { params: { slug: string } }) {
 
           </div>
           <hr className="my-8" />
-          <div className="flex flex-wrap gap-4">
-            <button
-              type="button"
-              className="min-w-[200px] px-4 py-3 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded"
-              onClick={handleOpenModalDemand}
-            >
-              Demande Livraison Now
-            </button>
-            <DemandModal isOpen={isModalDemandOpen} onClose={handleCloseDemandeModal} colisId={colis.id} userId={colis.userId} />
-            <button
-              type="button"
-              className="min-w-[200px] px-4 py-2.5 border border-gray-800 bg-transparent hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded"
-            >
-              Send Message
-            </button>
-            {if(!isColisOner){
-              (
-                <div>
-                  <button
-                    type="button"
-                    className="min-w-[200px] px-4 py-2.5 border border-red-600 bg-transparent hover:bg-red-50 text-red-600 text-sm font-semibold rounded"
-                    onClick={handleOpenModal}
-                  >
-                    Report Colis
-                  </button>
+          {!isColisOner && (
+            <><div className="flex flex-wrap gap-4">
+              <button
+                type="button"
+                className="min-w-[200px] px-4 py-3 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded"
+                onClick={handleOpenModalDemand}
+              >
+                Demande Livraison Now
+              </button><DemandModal isOpen={isModalDemandOpen} onClose={handleCloseDemandeModal} colisId={colis.id} userId={colis.userId} /><button
+                type="button"
+                className="min-w-[200px] px-4 py-2.5 border border-gray-800 bg-transparent hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded"
+              >
+                Send Message
+              </button><div>
+                <button
+                  type="button"
+                  className="min-w-[200px] px-4 py-2.5 border border-red-600 bg-transparent hover:bg-red-50 text-red-600 text-sm font-semibold rounded"
+                  onClick={handleOpenModal}
+                >
+                  Report Colis
+                </button>
+                {colis && (
                   <ReportModal isOpen={isModalOpen} onClose={handleCloseModal} colisId={colis.id} />
-                </div>
-                )}}
-
-          </div>
+                )}
+              </div>
+            </div></>
+          )}
         </div>
       </div>
       <div className="mt-32">
@@ -189,7 +219,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
           {activeTab === "demande" && (
             <div id="demande">
-              <Demandes colisId={colis.id} demanded={colis.demanded} isColisOner={isColisOner}/>
+              <Demandes colisId={colis.id} demanded={colis.demanded} isColisOner={isColisOner} />
             </div>
           )}
         </div>

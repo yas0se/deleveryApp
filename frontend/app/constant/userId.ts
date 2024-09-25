@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import { jwtDecode } from "jwt-decode";
 
 interface User {
   id: number;
@@ -10,20 +10,22 @@ interface User {
   phone: string;
 }
 
-let user: User | null = null; // Initialize user variable
-
-const token = localStorage.getItem("token");
-
-if (token) {
-  try {
-    const payload = jwt.verify(token, "user_key") as { user: User  };
-    user = payload.user; // Assign the user from payload
-    console.log(payload);
-  } catch (err) {
-    console.error("Invalid token", err);
-  }
-} else {
-  console.error("No token found");
+interface DecodedPayload {
+  user: User;
+  iat: number; // Issued at time
+  exp: number; // Expiration time
 }
 
-export default User;
+function verifyToken(token: string): User | null {
+  try {
+    console.log("verifyToken start : ", token)
+    const decoded = jwtDecode<DecodedPayload>(token);
+    console.log("decoded : ", decoded.user)
+    return decoded.user; // Return the decoded user from token
+  } catch (err) {
+    console.error("Invalid token", err);
+    return null; // Return null if the token is invalid
+  }
+}
+
+export default verifyToken;
