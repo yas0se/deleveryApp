@@ -56,7 +56,7 @@ const Demandes = ({
 
   const getDataDemanded = async () => {
     console.log("Fetching data and filtering accepted demandes...");
-  
+
     try {
       const response = await fetch(`${API_URL}/demande/parcel/${colisId}`, {
         method: "GET",
@@ -64,14 +64,14 @@ const Demandes = ({
           "Content-Type": "application/json",
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         setError(`Error: ${errorData.error}`);
         return;
       }
-  
-      const data = await response.json();  
+
+      const data = await response.json();
       if (Array.isArray(data)) {
         const acceptedDemandes = data.filter((demande: Demandes) => demande.status === "accepted");
         setDemandes(acceptedDemandes); // Set state with only accepted demandes
@@ -87,11 +87,11 @@ const Demandes = ({
       setLoading(false); // Always set loading to false after fetching
     }
   };
-  
+
   useEffect(() => {
-    if(!demanded){
+    if (!demanded) {
       getData();
-    }else{
+    } else {
       getDataDemanded();
     }
   }, []);
@@ -114,39 +114,39 @@ const Demandes = ({
 
   if (demanded) {
     return <div className="font-sans max-w-6xl max-lg:max-w-4xl mx-auto bg-gray-50 p-8">
-    <div className="grid lg:grid-cols-2 gap-12">
-      <div>
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Demande Accepted</h2>
-          <div className="space-y-6">
-            {demandes.map((demande) => (
-              <div key={demande.id} className="p-6 bg-gray-100 rounded-md shadow-md">
-                <div className="grid sm:grid-cols-3 items-start md:gap-4">
-                  <div className="col-span-2 flex items-start gap-4">
-                    <div className="flex flex-col">
-                      <h3 className="text-sm text-center font-semibold text-gray-700">
-                        Date: {new Date(demande.createdAt).toLocaleDateString()}
-                      </h3>
+      <div className="grid lg:grid-cols-2 gap-12">
+        <div>
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Demande Accepted</h2>
+            <div className="space-y-6">
+              {demandes.map((demande) => (
+                <div key={demande.id} className="p-6 bg-gray-100 rounded-md shadow-md">
+                  <div className="grid sm:grid-cols-3 items-start md:gap-4">
+                    <div className="col-span-2 flex items-start gap-4">
+                      <div className="flex flex-col">
+                        <h3 className="text-sm text-center font-semibold text-gray-700">
+                          Date: {new Date(demande.createdAt).toLocaleDateString()}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="ml-auto flex flex-col items-end">
+                      <h4 className="text-2xl font-bold text-gray-700">
+                        {demande.offer} DH
+                      </h4>
+                      <a
+                        className="mt-4 inline-block px-4 py-2 bg-green-500 hover:bg-green-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
+                      >
+                        Accepted
+                      </a>
                     </div>
                   </div>
-                  <div className="ml-auto flex flex-col items-end">
-                    <h4 className="text-2xl font-bold text-gray-700">
-                      {demande.offer} DH
-                    </h4>
-                    <a
-                      className="mt-4 inline-block px-4 py-2 bg-green-500 hover:bg-green-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
-                    >
-                      Accepted
-                    </a>
-                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div> 
   }
 
   const handleAcceptDemande = async (demandeId: number) => {
@@ -172,6 +172,7 @@ const Demandes = ({
       console.log("Demande accepted successfully.");
       // Optionally, refresh the data after acceptance
       getData();
+      window.location.reload();
     } catch (error) {
       console.error("Failed to accept demande:", error);
     }
@@ -199,15 +200,22 @@ const Demandes = ({
                       <h4 className="text-2xl font-bold text-gray-700">
                         {demande.offer} DH
                       </h4>
-                      
-                      <button
-                        type="button"
-                        onClick={() => handleAcceptDemande(demande.id)}
-                        className="mt-4 inline-block px-4 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
-                        disabled={demande.status === "pending"}
-                      >
-                        {isColisOner ? "Pending" : "Accept"}
-                      </button>
+                      {isColisOner ? (
+                        <button
+                          type="button"
+                          onClick={() => handleAcceptDemande(demande.id)}
+                          className="mt-4 inline-block px-4 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
+                        >
+                          Accept
+                        </button>
+                      ) : (
+                        <button
+                          className="mt-4 inline-block px-4 py-2 bg-gray-500 hover:bg-gray-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
+                        >
+                          Pending
+                        </button>
+                      )}
+
                     </div>
                   </div>
                 </div>

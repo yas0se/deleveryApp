@@ -52,6 +52,14 @@ export default function Header() {
                                 <img src="https://colisprive.fr/wp-content/uploads/2024/03/picto-CP-2024_traking-colis-copie-2.png" alt="logo" className='w-36' />
                             </a>
                         </li>
+                        <li
+                                key="Home"
+                                className='max-lg:border-b max-lg:py-3 max-lg:px-3 relative lg:hover:after:absolute lg:after:bg-black lg:after:w-0 lg:hover:after:w-full lg:hover:after:h-[2px] lg:after:block lg:after:top-6 lg:after:transition-all lg:after:duration-300'
+                            >
+                                <a href="/" className='text-black block text-[15px]'>
+                                    Home
+                                </a>
+                            </li>
                         {['Colis', 'AjouterColis', 'AboutUS', 'Support', 'Messages'].map((item) => (
                             <li
                                 key={item}

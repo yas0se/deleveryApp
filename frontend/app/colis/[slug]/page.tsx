@@ -10,6 +10,9 @@ import { ReportModal } from "./reportModal"
 import Demandes from "@/app/components/demandes";
 import { DemandModal } from "./demandModal";
 import verifyToken from "@/app/constant/userId"
+import verifyTokenFunction from "@/app/constant/verifyTokenFunction";
+import { redirect } from "next/navigation";
+
 
 interface Colis {
   id: number;
@@ -40,6 +43,13 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [isModalDemandOpen, setIsModalDemandOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isColisOner, setIsColisOner] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!verifyTokenFunction(token)){
+      redirect("/colis")
+    }
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token"); // Get the token from localStorage

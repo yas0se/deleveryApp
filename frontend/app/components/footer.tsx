@@ -2,7 +2,7 @@ import React from 'react'
 
 function Footer() {
   return (
-<div className="min-h-screen flex flex-col">
+<div className="min-h-80 flex flex-col">
   {/* Main content area */}
   <div className="flex-grow">
     {/* Your main content goes here */}

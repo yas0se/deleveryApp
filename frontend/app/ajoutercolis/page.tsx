@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { API_URL } from "../constant/apiUrl";
+import verifyTokenFunction from "../constant/verifyTokenFunction";
+import { redirect } from "next/navigation";
 
 // Zod validation schema
 const ColisSchema = z.object({
@@ -28,7 +30,9 @@ const AjouterColis = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("token: ", token)
+    if(!verifyTokenFunction(token)){
+      redirect("/")
+    }
     setToken(token);
   }, []);
 
