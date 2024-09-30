@@ -74,7 +74,7 @@ const Demandes = ({ }: {}) => {
 
   return (
     <div className="font-sans max-w-6xl max-lg:max-w-4xl mx-auto bg-gray-50 p-8">
-      <div className="grid lg:grid-cols-2 gap-12">
+      <div className="grid  gap-12">
         <div>
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Mes Demandes</h2>
@@ -94,8 +94,8 @@ const Demandes = ({ }: {}) => {
                         {demande.offer} DH
                       </h4>
 
-                      <button
-                        className="mt-4 inline-block px-4 py-2 bg-gray-700 hover:bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
+                      <div><button
+                        className="mr-4 mt-4 inline-block px-4 py-2 bg-gray-700 hover:bg-gray-900 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
                       >
                         {demande.status}
                       </button>
@@ -104,7 +104,7 @@ const Demandes = ({ }: {}) => {
                         className="mt-4 inline-block px-4 py-2 bg-purple-500 hover:bg-purple-700 text-white text-sm font-semibold rounded-md shadow-md transition duration-300"
                       >
                         Colis info
-                      </a>
+                      </a></div>
 
                     </div>
                   </div>

@@ -102,7 +102,7 @@ const Notifications = () => {
 
   return (
     <div className="font-sans max-w-6xl max-lg:max-w-4xl mx-auto bg-gray-50 p-8">
-      <div className="grid lg:grid-cols-2 gap-12">
+      <div className="grid gap-12">
         <div>
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Notifications</h2>
