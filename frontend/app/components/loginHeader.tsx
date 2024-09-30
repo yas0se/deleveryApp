@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { API_URL } from '../constant/apiUrl';

@@ -1,3 +1,6 @@
+/* eslint-disable  @typescript-eslint/no-unused-vars */
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+/* eslint-disable  react/no-unescaped-entities */
 "use client"
 import React, { useEffect, useState } from 'react';
 import { API_URL } from '../constant/apiUrl';

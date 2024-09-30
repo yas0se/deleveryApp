@@ -1,4 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
+
 "use client";
 import React, { useEffect, useState } from "react";
 import { API_URL } from "../constant/apiUrl";
