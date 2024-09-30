@@ -47,7 +47,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if(!verifyTokenFunction(token)){
-      redirect("/colis")
+      redirect("/login")
     }
   }, []);
 
@@ -168,7 +168,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
           </div>
           <hr className="my-8" />
-          {!isColisOner && (
+          {!(isColisOner || colis.demanded) && (
             <><div className="flex flex-wrap gap-4">
               <button
                 type="button"
@@ -176,7 +176,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                 onClick={handleOpenModalDemand}
               >
                 Demande Livraison Now
-              </button><DemandModal isOpen={isModalDemandOpen} onClose={handleCloseDemandeModal} colisId={colis.id} userId={colis.userId} /><button
+              </button><DemandModal isOpen={isModalDemandOpen} onClose={handleCloseDemandeModal} colisId={colis.id} /><button
                 type="button"
                 className="min-w-[200px] px-4 py-2.5 border border-gray-800 bg-transparent hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded"
               >

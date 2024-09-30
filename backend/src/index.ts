@@ -6,6 +6,7 @@ import routerParcel from './routes/ParcelRoutes';
 import routerDemande from './routes/DemandeRoutes';
 import routerReport from './routes/ReportRoutes';
 import routerMessage from './routes/MessageRoutes';
+import routerNotification from './routes/NotificationRoutes';
 
 
 const app = express();
@@ -16,7 +17,7 @@ app.use(express.json());
 
 app.use(cors({
     origin: 'http://localhost:3000', // Allow requests from your frontend
-    methods: 'GET,POST,PUT,DELETE', // Allowed methods
+    methods: 'GET,POST,PUT,DELETE,PATCH', // Allowed methods
     credentials: true // Allow cookies to be sent with requests
 }));
 
@@ -31,6 +32,7 @@ app.use("/", routerParcel);
 app.use("/", routerDemande);
 app.use("/", routerReport);
 app.use("/", routerMessage);
+app.use('/', routerNotification);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

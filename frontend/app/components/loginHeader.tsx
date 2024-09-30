@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { redirect } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { API_URL } from '../constant/apiUrl';
+import verifyToken from '../constant/userId';
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [userOpen, setUserOpen] = useState(false);
+    const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 
     const handleClick = () => {
         setMenuOpen(!menuOpen);  // Toggle menu state
@@ -10,6 +14,45 @@ export default function Header() {
     const handleUserClick = () => {
         setUserOpen(!userOpen);  // Toggle user dropdown state
     };
+
+    const getData = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (token) {
+                const verifiedUser: any = verifyToken(token);
+                const userId = verifiedUser.id;
+    
+                const response = await fetch(`${API_URL}/notifications/${userId}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+    
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    console.log("New data data: ", data);
+                    // Change isRead to read in the check
+                    const unreadExists = data.some(notification => !notification.read);
+                    setHasUnreadNotifications(unreadExists);
+                    console.log("New hasUnreadNotifications value: ", unreadExists); // Log the updated value
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    };
+    
+    useEffect(() => {
+        getData();
+    }, []);
+    
+    // Additional useEffect to log hasUnreadNotifications whenever it changes
+    useEffect(() => {
+        console.log("hasUnreadNotifications updated: ", hasUnreadNotifications);
+    }, [hasUnreadNotifications]);
+    
 
     return (
         <header className='flex shadow-sm py-3 px-4 sm:px-10 bg-white font-[sans-serif] min-h-[70px] tracking-wide relative z-50'>
@@ -53,14 +96,14 @@ export default function Header() {
                             </a>
                         </li>
                         <li
-                                key="Home"
-                                className='max-lg:border-b max-lg:py-3 max-lg:px-3 relative lg:hover:after:absolute lg:after:bg-black lg:after:w-0 lg:hover:after:w-full lg:hover:after:h-[2px] lg:after:block lg:after:top-6 lg:after:transition-all lg:after:duration-300'
-                            >
-                                <a href="/" className='text-black block text-[15px]'>
-                                    Home
-                                </a>
-                            </li>
-                        {['Colis', 'AjouterColis', 'AboutUS', 'Support', 'Messages'].map((item) => (
+                            key="Home"
+                            className='max-lg:border-b max-lg:py-3 max-lg:px-3 relative lg:hover:after:absolute lg:after:bg-black lg:after:w-0 lg:hover:after:w-full lg:hover:after:h-[2px] lg:after:block lg:after:top-6 lg:after:transition-all lg:after:duration-300'
+                        >
+                            <a href="/" className='text-black block text-[15px]'>
+                                Home
+                            </a>
+                        </li>
+                        {['Colis', 'AjouterColis', 'AboutUS', 'Support'].map((item) => (
                             <li
                                 key={item}
                                 className='max-lg:border-b max-lg:py-3 max-lg:px-3 relative lg:hover:after:absolute lg:after:bg-black lg:after:w-0 lg:hover:after:w-full lg:hover:after:h-[2px] lg:after:block lg:after:top-6 lg:after:transition-all lg:after:duration-300'
@@ -70,6 +113,14 @@ export default function Header() {
                                 </a>
                             </li>
                         ))}
+                        <li
+                            key="Notification"
+                            className='max-lg:border-b max-lg:py-3 max-lg:px-3 relative lg:hover:after:absolute lg:after:bg-black lg:after:w-0 lg:hover:after:w-full lg:hover:after:h-[2px] lg:after:block lg:after:top-6 lg:after:transition-all lg:after:duration-300'
+                        >
+                            <a href="/notification" className={`${hasUnreadNotifications ? 'text-red-600' : 'text-black'} block text-[15px]`}>
+                                Notification
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -104,7 +155,10 @@ export default function Header() {
                                 </ul>
                                 <button
                                     type='button'
-                                    onClick={() => localStorage.removeItem("token")}
+                                    onClick={() => {
+                                        localStorage.removeItem("token");
+                                        redirect("/");
+                                    }}
                                     className="bg-transparent border-2 border-gray-300 hover:border-black rounded px-4 py-2.5 mt-4 text-sm text-black font-semibold"
                                 >
                                     LOGOUT

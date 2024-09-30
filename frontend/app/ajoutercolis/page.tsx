@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, FormEvent } from "react";
 import { z } from "zod";
 import { API_URL } from "../constant/apiUrl";
 import verifyTokenFunction from "../constant/verifyTokenFunction";
@@ -8,26 +8,36 @@ import { redirect } from "next/navigation";
 // Zod validation schema
 const ColisSchema = z.object({
   description: z.string().min(1, "Description is required"),
-  weight: z.number().positive("Weight must be a positive number").or(z.string()),
-  price: z.number().positive("Price must be a positive number").or(z.string()),
+  weight: z.number().positive("Weight must be a positive number"),
+  price: z.number().positive("Price must be a positive number"),
   origin: z.string().min(1, "Origin is required"),
   destination: z.string().min(1, "Destination is required"),
   image: z.instanceof(File).optional(),
 });
 
+type errorMessages=  {_errors:Array<string>}
+interface ErrorColis{
+  description?: errorMessages;
+  weight?: errorMessages;
+  price?: errorMessages;
+  origin?: errorMessages;
+  destination?: errorMessages;
+  image?: errorMessages;
+}
+
 const AjouterColis = () => {
   const [description, setDescription] = useState("");
-  const [weight, setWeight] = useState<number | string>("");
-  const [price, setPrice] = useState<number | string>("");
+  const [weight, setWeight] = useState<number>(0);
+  const [price, setPrice] = useState<number>(0);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [image, setImage] = useState<File | null>(null);
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<ErrorColis>({});
   const [token, setToken] = useState<string | null>(null);
 
   const cloud_name = "du1w6cmsb";
   const preset_key = "aauez9ty";
-
+  // setErrors({})
   useEffect(() => {
     const token = localStorage.getItem("token");
     if(!verifyTokenFunction(token)){
@@ -43,8 +53,24 @@ const AjouterColis = () => {
     console.log("token: ", token)
   };
 
-  const handleSaveColis = async (e: any) => {
+  const handleSaveColis = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const result = ColisSchema.safeParse({
+      description,
+      weight,
+      price,
+      origin,
+      destination,
+      image,
+    });
+
+    if (!result.success) {
+      const formattedErrors = result.error.format() as ErrorColis;
+      setErrors(formattedErrors);
+      return;
+    }
+
     try {
       if (image) {
         const formData = new FormData();
@@ -85,7 +111,7 @@ const AjouterColis = () => {
         });
 
         if (response.ok) {
-          const responseData = await response.json();
+          // const responseData = await response.json();
           alert('Colis created successfully!');
         } else {
           const errorData = await response.json();
@@ -102,7 +128,7 @@ const AjouterColis = () => {
 
 
   return (
-    <div className="p-3">
+    <div className="grid grid-cols-1 gap-4"><div className="p-3 place-self-center">
       <div className="card">
         <div className="card-body">
           <form onSubmit={handleSaveColis}>
@@ -130,7 +156,7 @@ const AjouterColis = () => {
                 type="number"
                 className="form-control"
                 value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+                onChange={(e) => setWeight(parseInt(e.target.value))}
               />
               {errors?.weight && (
                 <p className="text-danger">{errors.weight._errors[0]}</p>
@@ -145,7 +171,7 @@ const AjouterColis = () => {
                 type="number"
                 className="form-control"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => setPrice(parseInt(e.target.value))}
               />
               {errors?.price && (
                 <p className="text-danger">{errors.price._errors[0]}</p>
@@ -201,7 +227,8 @@ const AjouterColis = () => {
           </form>
         </div>
       </div>
-    </div>
+    </div></div>
+
   );
 };
 

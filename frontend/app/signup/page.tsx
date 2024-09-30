@@ -100,7 +100,7 @@ const SignUpPage = () => {
                   <label className="text-gray-800 text-sm mb-2 block">Phone</label>
                   <input
                     name="phone"
-                    type="text"
+                    type="number"
                     value={phone}
                     onChange={handlephoneChange}
                     className="bg-gray-100 w-full text-gray-800 text-sm px-4 py-4 focus:bg-transparent outline-blue-500 transition-all"

@@ -193,7 +193,6 @@ const Demandes = ({
                         <h3 className="text-sm font-semibold text-gray-700">
                           Date: {new Date(demande.createdAt).toLocaleDateString()}
                         </h3>
-                        <p className="text-gray-500 text-sm">Offer by User ID: {demande.userId}</p>
                       </div>
                     </div>
                     <div className="ml-auto flex flex-col items-end">

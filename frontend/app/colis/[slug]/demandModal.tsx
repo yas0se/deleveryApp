@@ -7,12 +7,10 @@ export const DemandModal = ({
   isOpen,
   onClose,
   colisId,
-  userId,
 }: {
   isOpen: boolean;
   onClose: () => void;
   colisId: number; // Now expecting colis ID as prop
-  userId: number
 }) => {
   const [offer, setOffer] = useState("");
 

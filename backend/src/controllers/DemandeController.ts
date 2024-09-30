@@ -31,7 +31,9 @@ export const createDemande = async (req: CustomRequest, res: Response, next: Nex
         // Récupérer les informations du propriétaire du colis
         const parcel = await prisma.parcel.findUnique({
             where: { id: parcelId },
-            select: { userId: true },  // Récupérer uniquement l'ID du propriétaire
+            select: { userId: true,
+                description: true
+             },  // Récupérer uniquement l'ID du propriétaire
         });
 
         if (!parcel) {
@@ -42,7 +44,7 @@ export const createDemande = async (req: CustomRequest, res: Response, next: Nex
         await prisma.notification.create({
             data: {
                 type: 'new_demande',
-                content: `You have a new delivery request for your parcel with ID: ${parcelId}`,
+                content: `You have a new delivery request for your parcel with ID: ${parcel.description}`,
                 userId: parcel.userId,
                 read: false,
             }
@@ -84,9 +86,9 @@ export const getDemandesByParcel = async (req: Request, res: Response, next: Nex
 // Get all demandes by userId
 export const getDemandesByUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { userId } = req.user.id;
-
+        const { userId } = req.params;
         if (!userId) {
+            console.log('userId required')
             throw new BadRequestError("User ID is required");
         }
 
@@ -95,7 +97,6 @@ export const getDemandesByUser = async (req: CustomRequest, res: Response, next:
                 userId: parseInt(userId),
             },
         });
-
         if (!demandes.length) {
             throw new NotFoundError("No demandes found for this user");
         }
